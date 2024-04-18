@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 const app = express();
 
-app.use(express.static("public"));
+
 
 app.use(
   express.urlencoded({
@@ -24,7 +24,7 @@ app.use(
     Credential: true,
   })
 );
-
+app.use(express.static('public'));
 app.use(cookieParser());
 // routes
 

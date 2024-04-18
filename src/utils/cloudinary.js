@@ -16,7 +16,6 @@ async function UploadFiles(LocalFile) {
     return response;
   } catch (error) {
     fs.unlinkSync(LocalFile);
-    return error;
   }
 }
 

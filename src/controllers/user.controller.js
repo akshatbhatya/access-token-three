@@ -13,14 +13,12 @@ const register = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "all fields are is required");
   }
+  console.log(password);
 
-  if (!password) {
-    throw new ApiError(400, "passwor is required");
-  }
   //   -----------------check user is exist Or Not---------------
 
   const findUser = await user.findOne({
-    $or: [{username}, {email}],
+    $or: [{ username }, { email }],
   });
 
   if (findUser) {
@@ -29,37 +27,32 @@ const register = asyncHandler(async (req, res) => {
 
   //   add images
 
-  const AvtarImage = req?.files?.avatar[0]?.path;
-  const coverAvtarImage = req?.files?.coverImage[0]?.path ||"";
+  const uploadAvatarImage = req?.files?.avatar[0].path;
+  const uploadCoverImage = req?.files?.coverImage[0].path || "";
 
-  const uplodedAvtar = await UploadFiles(AvtarImage);
-  const uploadCover = await UploadFiles(coverAvtarImage);
-  if (!uplodedAvtar) {
+  const filesavtar = await UploadFiles(uploadAvatarImage);
+  const fileCover = await UploadFiles(uploadCoverImage);
+  if (!filesavtar) {
     throw new ApiError(400, "avtar is required");
   }
 
-  //    create user
-
-  const ourUser = {
-    username: username?.toLowerCase(),
-    email: email?.toLowerCase(),
+  const newUser = {
+    username,
     fullName,
+    email,
     password,
-    avatar: uplodedAvtar.url,
-    coverImage: uploadCover.url,
+    avatar: filesavtar.url,
+    coverImage: fileCover.url,
   };
 
-  // crate user
-
-  const addUser = await user.create(ourUser);
-
-  // check user is creted
-
+  const addUser = await user.create(newUser);
   if (!addUser) {
-    throw new ApiError(500, "internal error user is not created");
+    throw new ApiError(500, "user is not created");
   }
 
-  return res.status(200).json(new ApiResponse(200, "user created suceesfully"));
+  res.status(200).json(
+    new ApiResponse(200, "user created sucessfully")
+  )
 });
 
 export { register };
