@@ -9,8 +9,11 @@ cloudinary.config({
 
 async function UploadFiles(LocalFile) {
   try {
-    await cloudinary.uploader.upload(LocalFile, { resource_type: "auto" });
+    const response = await cloudinary.uploader.upload(LocalFile, {
+      resource_type: "auto",
+    });
     fs.unlinkSync(LocalFile);
+    return response;
   } catch (error) {
     fs.unlinkSync(LocalFile);
     return error;

@@ -3,12 +3,13 @@ import DataBaseName from "../constants.js";
 
 const connectDb = async () => {
   try {
-    const database = await mongoose.connect(`${process}/${DataBaseName}`);
-    const response = database.Connection.host;
+    const data = mongoose.connect(`${process.env.MONGODB_URI}/${DataBaseName}`);
+    const response = (await data).connection.host;
     console.log(response);
     return response;
   } catch (error) {
-    return error;
+    console.log(error);
+    
   }
 };
 
