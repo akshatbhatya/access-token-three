@@ -1,10 +1,10 @@
 class ApiError extends Error {
   constructor(status, message, data = null, stack) {
     super(message);
-    (status = this.status),
-      (stack = this.stack),
-      (message = this.message),
-      (data = this.data);
+    (this.status = status),
+      (this.stack=stack),
+      (this.message=message),
+      (this.data=data);
 
     if (!stack) {
       Error.captureStackTrace(this, this.constructor);
