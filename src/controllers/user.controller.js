@@ -104,4 +104,8 @@ const logIn = asyncHandler(async (req, res) => {
     .cookie("accessToken", accessToken,httpOptions)
     .cookie("refreshToken", refreshToken,httpOptions);
 });
-export { register };
+
+const logout=asyncHandler((req, res)=>{
+
+});
+export { register,logIn };
