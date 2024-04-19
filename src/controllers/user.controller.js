@@ -5,12 +5,17 @@ import UploadFiles from "../utils/cloudinary.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 const generateTokens = async (userId) => {
-  const currentUser = await user.findById(userId);
-  const accessToken = currentUser.generateAccessToken();
-  const refreshToken = currentUser.generateRefreshToken();
-  currentUser.refreshToken = refreshToken;
-  await currentUser.save({validateBeforeSave:false})
-  return accessToken, refreshToken;
+  try {
+    const currentUser = await user.findById(userId);
+    const accessToken = currentUser.generateAccessToken();
+    const refreshToken = currentUser.generateRefreshToken();
+    currentUser.refreshToken = refreshToken;
+    await currentUser.save({validateBeforeSave:false})
+    return accessToken, refreshToken;
+  } catch (error) {
+    throw new ApiError(500,"tokens not generated")
+    
+  }
 };
 
 const register = asyncHandler(async (req, res) => {
