@@ -11,7 +11,7 @@ const generateTokens = async (userId) => {
     const refreshToken = await currentUser.generateRefreshToken();
     currentUser.refreshToken = refreshToken;
     await currentUser.save({ validateBeforeSave: false });
-    return {accessToken, refreshToken};
+    return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(500, "tokens not generated");
   }
@@ -110,8 +110,32 @@ const logIn = asyncHandler(async (req, res) => {
         accessToken,
         refreshToken,
       })
-    )
+    );
 });
 
-const logout = asyncHandler((req, res) => {});
+const logout = asyncHandler(async (req, res) => {
+  const findedUser = req.newUser._id;
+  await user.findByIdAndUpdate(
+    findedUser,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  const httpOptions = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", httpOptions)
+    .clearCookie("refreshToken", httpOptions)
+    .json(new ApiResponse(200, "log out successfully"));
+});
 export { register, logIn, logout };
