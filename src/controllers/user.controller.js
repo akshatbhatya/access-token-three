@@ -26,7 +26,7 @@ const register = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "all fields are is required");
   }
-  console.log(password);
+ 
 
   //   -----------------check user is exist Or Not---------------
 
