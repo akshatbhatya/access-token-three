@@ -10,11 +10,10 @@ const generateTokens = async (userId) => {
     const accessToken = currentUser.generateAccessToken();
     const refreshToken = currentUser.generateRefreshToken();
     currentUser.refreshToken = refreshToken;
-    await currentUser.save({validateBeforeSave:false})
+    await currentUser.save({ validateBeforeSave: false });
     return accessToken, refreshToken;
   } catch (error) {
-    throw new ApiError(500,"tokens not generated")
-    
+    throw new ApiError(500, "tokens not generated");
   }
 };
 
@@ -97,20 +96,22 @@ const logIn = asyncHandler(async (req, res) => {
     .findById(checkUserExistance._id)
     .select("-password -refreshToken");
 
-  const httpOptions={
-    httpOnly:true,
-    secure:true
-  }
+  const httpOptions = {
+    httpOnly: true,
+    secure: true,
+  };
   return res
     .status(200)
-    .json(new ApiResponse(200, "user login sucessfully",{
-      ourUser:loggedInUser,accessToken,refreshToken
-    }))
-    .cookie("accessToken", accessToken,httpOptions)
-    .cookie("refreshToken", refreshToken,httpOptions);
+    .json(
+      new ApiResponse(200, "user login sucessfully", {
+        ourUser: loggedInUser,
+        accessToken,
+        refreshToken,
+      })
+    )
+    .cookie("accessToken", accessToken, httpOptions)
+    .cookie("refreshToken", refreshToken, httpOptions);
 });
 
-const logout=asyncHandler((req, res)=>{
-
-});
-export { register,logIn };
+const logout = asyncHandler((req, res) => {});
+export { register, logIn, logout };
