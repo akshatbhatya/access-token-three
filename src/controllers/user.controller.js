@@ -149,18 +149,42 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
   }
 
-  const decodedToken = await jwt.verify(
-    incomingRefresh,
-    process.env.REFRESH_TOKEN
-  );
-
-  const currentUser = await user.findById(decodedToken._id);
-  if (!currentUser) {
-    throw new ApiError(400, "invalid access token");
-  }
-
-  if(incomingRefresh!=currentUser.refreshToken){
-    throw new ApiError(400,"invalid refresh token is not valid or incorrect")
+  try {
+    const decodedToken = await jwt.verify(
+      incomingRefresh,
+      process.env.REFRESH_TOKEN
+    );
+  
+    const currentUser = await user.findById(decodedToken._id);
+    if (!currentUser) {
+      throw new ApiError(400, "invalid access token");
+    }
+  
+    if(incomingRefresh!=currentUser.refreshToken){
+      throw new ApiError(400,"invalid refresh token is not valid or incorrect")
+    }
+  
+    const options={
+      httpOnly:true,
+      secure:true
+    }
+  
+    const {accessToken,refreshToken}=await generateTokens(currentUser._id);
+  
+    return res.status(200).json(
+      new ApiResponse(200,"new access token is generated",{
+        data:{
+          newAccessToken:accessToken,
+          newRefreshToken:refreshToken
+      
+        }
+  
+      }
+        
+      ).cookie("")
+    )
+  } catch (error) {
+    
   }
 });
 
