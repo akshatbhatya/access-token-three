@@ -3,6 +3,7 @@ import ApiError from "../utils/ApiError.js";
 import { user } from "../model/user.model.js";
 import UploadFiles from "../utils/cloudinary.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import jwt from "jsonwebtoken";
 
 const generateTokens = async (userId) => {
   try {
@@ -26,7 +27,6 @@ const register = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "all fields are is required");
   }
- 
 
   //   -----------------check user is exist Or Not---------------
 
@@ -138,4 +138,30 @@ const logout = asyncHandler(async (req, res) => {
     .clearCookie("refreshToken", httpOptions)
     .json(new ApiResponse(200, "log out successfully"));
 });
-export { register, logIn, logout };
+
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefresh = req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefresh) {
+    throw new ApiError(
+      401,
+      "invalid not found refresh token or un authorized request"
+    );
+  }
+
+  const decodedToken = await jwt.verify(
+    incomingRefresh,
+    process.env.REFRESH_TOKEN
+  );
+
+  const currentUser = await user.findById(decodedToken._id);
+  if (!currentUser) {
+    throw new ApiError(400, "invalid access token");
+  }
+
+  if(incomingRefresh!=currentUser.refreshToken){
+    throw new ApiError(400,"invalid refresh token is not valid or incorrect")
+  }
+});
+
+export { register, logIn, logout, refreshAccessToken };
